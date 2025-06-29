@@ -14,10 +14,4 @@
     <None Remove="vend1.png" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Resource Include="jndyf3jq.jpg" />
-    <Resource Include="monochrome-empty-modern-vending-machine-drinks-snacks-sale-isolated.png" />
-    <Resource Include="vend1.png" />
-  </ItemGroup>
-
 </Project>
