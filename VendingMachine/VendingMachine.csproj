@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="jndyf3jq.jpg" />
+    <None Remove="monochrome-empty-modern-vending-machine-drinks-snacks-sale-isolated.png" />
+    <None Remove="vend1.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="jndyf3jq.jpg" />
+    <Resource Include="monochrome-empty-modern-vending-machine-drinks-snacks-sale-isolated.png" />
+    <Resource Include="vend1.png" />
+  </ItemGroup>
+
+</Project>
