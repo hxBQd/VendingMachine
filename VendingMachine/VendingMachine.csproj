@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="fonts\DS-DIGIT.TTF" />
     <None Remove="img\jndyf3jq.jpg" />
     <None Remove="img\vend1.png" />
     <None Remove="jndyf3jq.jpg" />
@@ -16,6 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="fonts\DS-DIGIT.TTF">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="img\jndyf3jq.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>

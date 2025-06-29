@@ -5,8 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VendingMachine"
         mc:Ignorable="d"
-        Title="Vending Machine" Height="950" Width="618" WindowStyle="ThreeDBorderWindow">
+        Title="Vending Machine" Height="900" Width="622" WindowStyle="ThreeDBorderWindow">
     <Grid>
         <Image HorizontalAlignment="Left" Height="797" Margin="67,37,0,0" VerticalAlignment="Top" Width="477" Source="/VendingMachine;component/img/vend1.png"/>
+        <Label Content="0 ₽" HorizontalAlignment="Left" Margin="452,88,0,0" VerticalAlignment="Top" Height="43"
+               Width="67" Background="Black" HorizontalContentAlignment="Center"
+               VerticalContentAlignment="Center" ScrollViewer.VerticalScrollBarVisibility="Disabled"
+               FontWeight="Bold" Foreground="#FF018317" FontFamily="DS-Digital"
+               UseLayoutRounding="True" FontSize="16"/>
     </Grid>
 </Window>
+
+<!-- 999 ₽ -->
+<!-- -->
