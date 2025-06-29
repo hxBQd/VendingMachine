@@ -7,6 +7,6 @@
         mc:Ignorable="d"
         Title="Vending Machine" Height="950" Width="618" WindowStyle="ThreeDBorderWindow">
     <Grid>
-        <Image HorizontalAlignment="Left" Height="754" Margin="70,0,0,0" VerticalAlignment="Center" Width="463" Source="/vend1.png"/>
+        <Image HorizontalAlignment="Left" Height="797" Margin="67,37,0,0" VerticalAlignment="Top" Width="477" Source="/VendingMachine;component/img/vend1.png"/>
     </Grid>
 </Window>

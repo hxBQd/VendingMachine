@@ -9,9 +9,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="img\jndyf3jq.jpg" />
+    <None Remove="img\vend1.png" />
     <None Remove="jndyf3jq.jpg" />
     <None Remove="monochrome-empty-modern-vending-machine-drinks-snacks-sale-isolated.png" />
-    <None Remove="vend1.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="img\jndyf3jq.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\vend1.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>
