@@ -10,22 +10,46 @@
 
   <ItemGroup>
     <None Remove="fonts\DS-DIGIT.TTF" />
+    <None Remove="img\100rub.png" />
+    <None Remove="img\10ruble.png" />
+    <None Remove="img\1ruble.png" />
     <None Remove="img\jndyf3jq.jpg" />
     <None Remove="img\vend1.png" />
     <None Remove="jndyf3jq.jpg" />
     <None Remove="monochrome-empty-modern-vending-machine-drinks-snacks-sale-isolated.png" />
+    <None Remove="vend2_closed.png" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!--<ItemGroup>
     <Resource Include="fonts\DS-DIGIT.TTF">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="img\jndyf3jq.jpg">
+    <Resource Include="img\100rub.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\10ruble.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="img\1ruble.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="img\vend1.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-  </ItemGroup>
+    <Resource Include="vend2_closed.png" />
+  </ItemGroup>-->
+
+	<ItemGroup>
+		<Resource Include="fonts\**\*.*">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="img\**\*.*">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Resource Include="vend2_closed.png" />
+	</ItemGroup>
 
 </Project>

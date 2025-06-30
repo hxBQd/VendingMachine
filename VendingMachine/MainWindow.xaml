@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Vending Machine" Height="900" Width="622" WindowStyle="ThreeDBorderWindow">
     <Grid>
-        <Image HorizontalAlignment="Left" Height="797" Margin="67,37,0,0" VerticalAlignment="Top" Width="477" Source="/VendingMachine;component/img/vend1.png"/>
+        <Image HorizontalAlignment="Left" Height="797" Margin="67,37,0,0" VerticalAlignment="Top" Width="477" Source="img/vend2_closed.png"/>
         <Label Content="0 ₽" HorizontalAlignment="Left" Margin="452,88,0,0" VerticalAlignment="Top" Height="43"
                Width="67" Background="Black" HorizontalContentAlignment="Center"
                VerticalContentAlignment="Center" ScrollViewer.VerticalScrollBarVisibility="Disabled"
