@@ -5,16 +5,169 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VendingMachine"
         mc:Ignorable="d"
-        Title="Vending Machine" Height="900" Width="622" WindowStyle="ThreeDBorderWindow">
-    <Grid>
-        <Image HorizontalAlignment="Left" Height="797" Margin="67,37,0,0" VerticalAlignment="Top" Width="477" Source="img/vend2_closed.png"/>
-        <Label Content="0 ₽" HorizontalAlignment="Left" Margin="452,88,0,0" VerticalAlignment="Top" Height="43"
-               Width="67" Background="Black" HorizontalContentAlignment="Center"
-               VerticalContentAlignment="Center" ScrollViewer.VerticalScrollBarVisibility="Disabled"
-               FontWeight="Bold" Foreground="#FF018317" FontFamily="DS-Digital"
-               UseLayoutRounding="True" FontSize="16"/>
-    </Grid>
+        Title="Vending Machine" Height="900" Width="622" WindowStyle="ThreeDBorderWindow" LocationChanged="Window_LocationChanged">
+    <Window.Resources>
+        <Style x:Key="KeyboardElement" TargetType="Button">
+            <Setter Property="Margin" Value="4,3,4,3"/>
+            <Setter Property="Width" Value="19"/>
+            <Setter Property="Height" Value="19"/>
+        </Style>
+
+        <Style x:Key="NoLight" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                            BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="BorderBrush" Value="Transparent"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="BorderBrush" Value="Transparent"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="RoundButtonStyle" TargetType="Button" BasedOn="{StaticResource NoLight}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Width="{TemplateBinding Width}" 
+                            Height="{TemplateBinding Height}" 
+                            Background="{TemplateBinding Background}" 
+                            BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="{TemplateBinding BorderThickness}" 
+                            CornerRadius="21.5">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
+    <Canvas>
+        <!-- Popup для купюр -->
+        <Popup x:Name="BanknotePopup" Placement="Mouse" AllowsTransparency="True" StaysOpen="False">
+            <Border Background="White" CornerRadius="10" Padding="10" BorderBrush="Black" BorderThickness="1">
+                <StackPanel>
+                    <Button Content="50 р" Click="BanknoteButton_Click" Tag="50"/>
+                    <Button Content="100 р" Click="BanknoteButton_Click" Tag="100"/>
+                </StackPanel>
+            </Border>
+        </Popup>
+
+        <!-- Popup для монет -->
+        <Popup x:Name="CoinPopup" Placement="Mouse" AllowsTransparency="True" StaysOpen="False" Cursor="Hand">
+            <Border CornerRadius="10" Padding="10" BorderBrush="White" BorderThickness="1" Background="Red">
+                <StackPanel>
+                    <Button Content="1 р" Click="CoinButton_Click" Tag="1"/>
+                    <Button Content="2 р" Click="CoinButton_Click" Tag="2"/>
+                    <Button Content="5 р" Click="CoinButton_Click" Tag="5"/>
+                    <Button Content="10 р" Click="CoinButton_Click" Tag="10"/>
+                </StackPanel>
+            </Border>
+        </Popup>
+
+        <!-- Popup для карты -->
+        <Popup x:Name="CardPopup" Placement="Mouse" AllowsTransparency="True" StaysOpen="False">
+            <Border Background="White" CornerRadius="10" Padding="10" BorderBrush="Black" BorderThickness="1">
+                <StackPanel>
+                    <TextBlock Text="Применить скидку?" Margin="0,0,0,5"/>
+                    <Button Content="Да" Click="CardButton_Click" Tag="Yes"/>
+                    <Button Content="Нет" Click="CardButton_Click" Tag="No"/>
+                </StackPanel>
+            </Border>
+        </Popup>
+
+        <!--Закрытый автомат-->
+        <Image x:Name="VendingImage" HorizontalAlignment="Left" Height="797" Margin="67,37,0,0" VerticalAlignment="Top" Width="477" Source="img/vend2_closed.png" Grid.ColumnSpan="2"/>
+
+        <!--товары-->
+        <Image HorizontalAlignment="Left" Height="46" Margin="99,76,0,0" VerticalAlignment="Top" Width="17" Source="img/snickers.png"/>
+        <Image HorizontalAlignment="Left" Height="73" Margin="106,248,0,0" VerticalAlignment="Top" Width="51" Source="img/lays_crab.png"/>
+        <Image HorizontalAlignment="Left" Height="46" Margin="136,76,0,0" VerticalAlignment="Top" Width="29" Source="img/pepsi_can.png"/>
+
+        <!--кольца блокировки-->
+        <Image HorizontalAlignment="Left" Height="37" Margin="89,85,0,0" VerticalAlignment="Top" Width="37" Source="img/ring.png"/>
+        <Image HorizontalAlignment="Left" Height="37" Margin="131,85,0,0" VerticalAlignment="Top" Width="38" Source="img/ring.png"/>
+        <Image HorizontalAlignment="Left" Height="36" Margin="95,285,0,0" VerticalAlignment="Top" Width="38" Source="img/ring.png"/>
+        <Image HorizontalAlignment="Left" Height="36" Margin="131,285,0,0" VerticalAlignment="Top" Width="38" Source="img/ring.png"/>
+
+        <!--Экран автомата -->
+        <Label x:Name="mainScreen" Content="0 ₽" HorizontalAlignment="Left" VerticalAlignment="Center" Height="73"
+                Width="81" Background="Black" HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center" ScrollViewer.VerticalScrollBarVisibility="Disabled" Foreground="#FF018317" FontFamily="DS-Digital"
+                UseLayoutRounding="True" FontSize="16" Canvas.Left="443" Canvas.Top="58"/>
+        <!--0 ₽ NEED: 100 ₽&#x0a;HAVE: 50 ₽ DS-Digital-->
+        
+        <!--Клавиатура автомата-->
+        <Grid Margin="443,152,10,10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="24"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="28"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="27"/>
+                <ColumnDefinition Width="27"/>
+                <ColumnDefinition Width="27"/>
+            </Grid.ColumnDefinitions>
+            <Button Content="1" Grid.Row="0" Grid.Column="0" Click="Button_Click" Style="{StaticResource KeyboardElement}"/>
+            <Button Content="2" Grid.Row="0" Grid.Column="1" Click="Button_Click" Style="{StaticResource KeyboardElement}"/>
+            <Button Content="3" Grid.Row="0" Grid.Column="2" Click="Button_Click" Style="{StaticResource KeyboardElement}"/>
+
+            <Button Content="4" Grid.Row="1" Grid.Column="0" Click="Button_Click" Style="{StaticResource KeyboardElement}"/>
+            <Button Content="5" Grid.Row="1" Grid.Column="1" Click="Button_Click" Style="{StaticResource KeyboardElement}"/>
+            <Button Content="6" Grid.Row="1" Grid.Column="2" Click="Button_Click" Style="{StaticResource KeyboardElement}"/>
+
+            <Button Content="7" Grid.Row="2" Grid.Column="0" Click="Button_Click" Style="{StaticResource KeyboardElement}"/>
+            <Button Content="8" Grid.Row="2" Grid.Column="1" Click="Button_Click" Style="{StaticResource KeyboardElement}"/>
+            <Button Content="9" Grid.Row="2" Grid.Column="2" Click="Button_Click" Style="{StaticResource KeyboardElement}"/>
+
+            <Button Content="A" Grid.Row="3" Grid.Column="0" Click="Button_Click" Style="{StaticResource KeyboardElement}"/>
+            <Button Content="0" Grid.Row="3" Grid.Column="1" Click="Button_Click" Style="{StaticResource KeyboardElement}"/>
+            <Button Content="C" Grid.Row="3" Grid.Column="2" Click="Button_Click" Style="{StaticResource KeyboardElement}"/>
+
+            <Button Content="OK" Grid.Row="4" Grid.Column="0" Click="Button_Click" Style="{StaticResource KeyboardElement}"/>
+            <Button Content=" " Grid.Row="4" Grid.Column="2" Click="Button_Click" Style="{StaticResource KeyboardElement}"/>
+
+            <!--сраный костыль для рабочих областей вставки денег-->
+            <!--<Button x:Name="BanknoteAcceptor" Click="BanknoteAcceptor_Click" Margin="20,109,17,-90" Background="Transparent" BorderBrush="Red" BorderThickness="2" Height="9.03999999999996" Grid.ColumnSpan="3" Grid.Row="4"/>
+            <Button x:Name="CoinAcceptor" Click="CoinAcceptor_Click" Margin="17,150,9,-129" Background="Transparent" BorderBrush="Red" BorderThickness="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="4"/>
+            <Button x:Name="CardReader" Click="CardReader_Click" Margin="6,188,4,-203" Background="Transparent" Height="43" BorderBrush="Red" BorderThickness="2" Grid.ColumnSpan="3" Grid.Row="4"/>-->
+        </Grid>
+        <!--BorderBrush="Red" BorderThickness="2"-->
+
+        <!-- Интерактивные области (прозрачные кнопки)  -->
+        <Button x:Name="BanknoteAcceptor" Click="BanknoteAcceptor_Click" Height="11" Grid.ColumnSpan="3" Grid.Row="4"
+                Canvas.Left="462" Canvas.Top="359" Width="46" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                Style="{StaticResource NoLight}"/>
+        <Button x:Name="CoinAcceptor" Click="CoinAcceptor_Click"
+                Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="4" Canvas.Left="488" Canvas.Top="401" RenderTransformOrigin="0.5,0.5"
+                HorizontalAlignment="Center" VerticalAlignment="Top" Width="29" Style="{StaticResource NoLight}" Height="7"/>
+        <Button x:Name="CardReader" Click="CardReader_Click" Height="43" Grid.ColumnSpan="3" 
+                Grid.Row="4" Canvas.Left="450" Canvas.Top="439" HorizontalAlignment="Center" VerticalAlignment="Center" Width="70" 
+                Style="{StaticResource NoLight}"/>
+
+        <Button Click="returnMoney" Canvas.Left="459" Canvas.Top="397" Height="15" Width="15" Style="{StaticResource RoundButtonStyle}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    </Canvas>
+
 </Window>
 
 <!-- 999 ₽ -->
-<!-- -->
+<!-- 2.67 -->

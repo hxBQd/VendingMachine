@@ -41,15 +41,10 @@
 
 	<ItemGroup>
 		<Resource Include="fonts\**\*.*">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Resource>
 		<Resource Include="img\**\*.*">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Resource>
 	</ItemGroup>
-
-	<ItemGroup>
-	  <Resource Include="vend2_closed.png" />
-	</ItemGroup>
-
 </Project>
