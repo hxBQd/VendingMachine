@@ -167,27 +167,42 @@
                 Grid.Row="4" Canvas.Left="450" Canvas.Top="439" HorizontalAlignment="Center" VerticalAlignment="Center" Width="70" 
                 Style="{StaticResource NoLight}"/>
 
-        <!--возврат бабла у монетприёмника-->
+        <!--кнопка возврат бабла у монетприёмника-->
         <Button Click="returnMoney" Canvas.Left="459" Canvas.Top="397" Height="15" Width="15" Style="{StaticResource RoundButtonStyle}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
+        <!--карта скидки-->
         <Image x:Name="VipCardImage" Height="45" Canvas.Left="653" Canvas.Top="438" Width="67" Source="img/vip_card.png" Visibility="Hidden" HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
+        <!--купюры для купюроприёмника-->
         <Image x:Name="rub100Image" Height="74" Canvas.Left="670" Canvas.Top="381" Width="32" Source="img/100rub.png" Visibility="Hidden"/>
         <Image x:Name="rub50Image" Height="74" Canvas.Left="670" Canvas.Top="381" Width="32" Source="img/50rub.png" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Hidden"/>
         <!--Canvas.Left="670" Canvas.Top="381"-->
 
+        <!--монеты для монетоприёмника-->
         <Image x:Name="rub10Image" Height="25" Canvas.Left="662" Canvas.Top="413" Width="25" Source="img/10rub.png" Visibility="Hidden"/>
         <Image x:Name="rub1Image" Height="25" Canvas.Left="662" Canvas.Top="413" Width="24" Source="img/1rub.png" Visibility="Hidden"/>
         <Image x:Name="rub5Image" Height="25" Canvas.Left="662" Canvas.Top="413" Width="25" Source="img/5rub.png" Visibility="Hidden"/>
         <Image x:Name="rub2Image" Height="25" Canvas.Left="662" Canvas.Top="413" Width="25" Source="img/2rub.png" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Hidden"/>
-
         <!--<Image Height="25" Canvas.Left="662" Canvas.Top="413" Width="24" Source="img/1rub.png"/>-->
+
+
+        <!--<Image x:Name="rub10Image_out" Height="25" Canvas.Left="662" Canvas.Top="413" Width="25" Source="img/10rub.png" Visibility="Visible"/>
+        <Image x:Name="rub1Image_out" Height="25" Canvas.Left="662" Canvas.Top="413" Width="24" Source="img/1rub.png" Visibility="Visible"/>
+        <Image x:Name="rub5Image_out" Height="25" Canvas.Left="662" Canvas.Top="413" Width="25" Source="img/5rub.png" Visibility="Visible"/>-->
+        <!--<Image x:Name="rub2Image_out" Height="25" Canvas.Left="472" Canvas.Top="521" Width="24" Source="img/2rub.png" HorizontalAlignment="Left" VerticalAlignment="Center" Visibility="Visible"/>-->
+        <!--Canvas.Left="472" Canvas.Top="521"-->
+        <!--Canvas.Left="472" Canvas.Top="593"-->
+        <!--Canvas.Left="644" Canvas.Top="593"-->
+
         <!--Visible  Hidden-->
 
-        <!--ёбанный костыль для прятки монет-->
+        <!--костыль для прятки монет в монетоприёмник-->
         <Image x:Name="hideCoinImage" Height="40" Canvas.Left="483" Canvas.Top="364" Width="38" Source="img/hide_coin.png" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Hidden"/>
 
-        <!--ёбанный костыль для прятки купюр-->
+        <!--костыль для прятки монет из монетовыдавателя-->
+        <Image x:Name="hideCoinOutImage" Height="49" Canvas.Left="453" Canvas.Top="503" Width="65" Source="img/hide_coin_out.png" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Hidden"/>
+
+        <!--костыль для прятки купюр-->
         <Image x:Name="hideBanknoteImage" Height="90" Canvas.Left="447" Canvas.Top="276" Width="74" Source="img/hide_banknote.png" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Hidden"/>
     </Canvas>
 

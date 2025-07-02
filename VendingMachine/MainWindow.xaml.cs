@@ -46,10 +46,15 @@ namespace VendingMachine
             //BanknotePopup.IsOpen = true;
             //CardPopup.IsOpen = true;
 
+            // для Window_LocationChanged
             //previousLeft = this.Left;
             //previousTop = this.Top;
 
         }
+
+        // хотел чтобы при изменении позиции окна в компе,
+        // popup окна сохраняли свою позицию относительно автомата
+        // но пока забил на это болт...
 
         //private void Window_LocationChanged(object sender, System.EventArgs e)
         //{
@@ -93,15 +98,153 @@ namespace VendingMachine
                 {
                     discountApplied = false;
                 }
-                // сделать анимацию падения сраного товара
+                // TODO: сделать анимацию падения сраного товара
             }
             else
             {
                 mainScreen.Content = "NEED MORE\nMONEY ₽"; // ERR
-                // сделать после некоторого времени сообщение "LOW MONEY"
             }
             await Task.Delay(5000);
             mainScreen.Content = $"{totalAmount} ₽";
+        }
+        
+        // не удалять, другая версия анимации выдачи сдачи, тоже очень хорошая
+        // можно спокойно использовать эти 2 функции, работаю нормально
+        
+        //private async void CoinOutAnimation(int value)
+        //{
+        //    Image cur_coin = value_money[value];
+
+        //    hideCoinOutImage.Visibility = Visibility.Visible;
+        //    cur_coin.Visibility = Visibility.Visible;
+
+        //    Canvas.SetLeft(cur_coin, 472);
+        //    Canvas.SetTop(cur_coin, 521);
+        //    // Анимация движения вниз
+        //    DoubleAnimation moveDown = new DoubleAnimation
+        //    {
+        //        From = 521,
+        //        To = 593,
+        //        Duration = TimeSpan.FromSeconds(1) // 1 секунда на движение
+        //    };
+        //    cur_coin.BeginAnimation(Canvas.TopProperty, moveDown);
+
+        //    await Task.Delay(1000); // Ждем завершения анимации (1 секунда)
+
+        //    hideCoinOutImage.Visibility = Visibility.Hidden;
+
+        //    // Анимация движения вправо
+        //    DoubleAnimation moveRight = new DoubleAnimation
+        //    {
+        //        From = 472,
+        //        To = 644,
+        //        Duration = TimeSpan.FromSeconds(1), // 1 секунда на движение
+        //        //EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseInOut }
+        //    };
+        //    cur_coin.BeginAnimation(Canvas.LeftProperty, moveRight);
+
+        //    await Task.Delay(1000); // Ждем завершения анимации (1 секунда)
+
+        //    cur_coin.BeginAnimation(Canvas.TopProperty, null); // Останавливаем анимацию Bottom
+        //    cur_coin.BeginAnimation(Canvas.LeftProperty, null);
+
+        //    cur_coin.Visibility = Visibility.Hidden;
+        //    Canvas.SetLeft(cur_coin, 662);
+        //    Canvas.SetTop(cur_coin, 413);
+        //}
+
+
+        //private async void returnMoney(object sender, RoutedEventArgs e)
+        //{
+        //    enteredText = "";
+
+        //    int amount10 = totalAmount / 10;
+        //    int tempAmount = totalAmount % 10;
+        //    int amount5 = tempAmount / 5;
+        //    tempAmount %= 5;
+        //    int amount2 = tempAmount / 2;
+        //    tempAmount %= 2;
+        //    int amount1 = tempAmount;
+
+        //    for (int i = 0; i < amount10; i++)
+        //    {
+        //        mainScreen.Content = $"RETURN\nMONEY:\n{totalAmount} ₽";
+        //        totalAmount -= 10;
+        //        // вывод анимации монеты в 10 рублей
+        //        CoinOutAnimation(10);
+        //        await Task.Delay(2500); // wait animation
+        //    }
+
+        //    for (int i = 0; i < amount5; i++)
+        //    {
+        //        mainScreen.Content = $"RETURN MONEY:\n{totalAmount} ₽";
+        //        totalAmount -= 5;
+        //        // вывод анимации монеты в 5 рублей
+        //        CoinOutAnimation(5);
+        //        await Task.Delay(2500); // wait animation
+        //    }
+
+        //    for (int i = 0; i < amount2; i++)
+        //    {
+        //        mainScreen.Content = $"RETURN MONEY:\n{totalAmount} ₽";
+        //        totalAmount -= 2;
+        //        // вывод анимации монеты в 2 рублей
+        //        CoinOutAnimation(2);
+        //        await Task.Delay(2500); // wait animation
+        //    }
+
+        //    for (int i = 0; i < amount1; i++)
+        //    {
+        //        mainScreen.Content = $"RETURN MONEY:\n{totalAmount} ₽";
+        //        totalAmount -= 1;
+        //        // вывод анимации монеты в 1 рублей
+        //        CoinOutAnimation(1);
+        //        await Task.Delay(2500); // wait animation
+        //    }
+
+        //    mainScreen.Content = $"{totalAmount} ₽";
+        //}
+        private async Task CoinOutAnimation(int value)
+        {
+            Image cur_coin = value_money[value];
+
+            hideCoinOutImage.Visibility = Visibility.Visible;
+            cur_coin.Visibility = Visibility.Visible;
+
+            Canvas.SetLeft(cur_coin, 472);
+            Canvas.SetTop(cur_coin, 521);
+
+            // Анимация движения вниз
+            DoubleAnimation moveDown = new DoubleAnimation
+            {
+                From = 521,
+                To = 593,
+                Duration = TimeSpan.FromSeconds(1)
+            };
+            TaskCompletionSource<bool> tcsDown = new TaskCompletionSource<bool>();
+            moveDown.Completed += (s, e) => tcsDown.SetResult(true);
+            cur_coin.BeginAnimation(Canvas.TopProperty, moveDown);
+            await tcsDown.Task; // Ждем завершения анимации вниз
+
+            hideCoinOutImage.Visibility = Visibility.Hidden;
+
+            // Анимация движения вправо
+            DoubleAnimation moveRight = new DoubleAnimation
+            {
+                From = 472,
+                To = 644,
+                Duration = TimeSpan.FromSeconds(1)
+            };
+            TaskCompletionSource<bool> tcsRight = new TaskCompletionSource<bool>();
+            moveRight.Completed += (s, e) => tcsRight.SetResult(true);
+            cur_coin.BeginAnimation(Canvas.LeftProperty, moveRight);
+            await tcsRight.Task; // Ждем завершения анимации вправо
+
+            cur_coin.BeginAnimation(Canvas.TopProperty, null);
+            cur_coin.BeginAnimation(Canvas.LeftProperty, null);
+            cur_coin.Visibility = Visibility.Hidden;
+            Canvas.SetLeft(cur_coin, 662);
+            Canvas.SetTop(cur_coin, 413);
         }
 
         private async void returnMoney(object sender, RoutedEventArgs e)
@@ -120,36 +263,33 @@ namespace VendingMachine
             {
                 mainScreen.Content = $"RETURN\nMONEY:\n{totalAmount} ₽";
                 totalAmount -= 10;
-                // вывод анимации монеты в 10 рублей
-                await Task.Delay(1000); //temp
+                await CoinOutAnimation(10); // Ожидаем завершения анимации
             }
 
             for (int i = 0; i < amount5; i++)
             {
                 mainScreen.Content = $"RETURN MONEY:\n{totalAmount} ₽";
                 totalAmount -= 5;
-                // вывод анимации монеты в 5 рублей
-                await Task.Delay(1000); //temp
+                await CoinOutAnimation(5);
             }
 
             for (int i = 0; i < amount2; i++)
             {
                 mainScreen.Content = $"RETURN MONEY:\n{totalAmount} ₽";
                 totalAmount -= 2;
-                // вывод анимации монеты в 2 рублей
-                await Task.Delay(1000); //temp
+                await CoinOutAnimation(2);
             }
 
             for (int i = 0; i < amount1; i++)
             {
                 mainScreen.Content = $"RETURN MONEY:\n{totalAmount} ₽";
                 totalAmount -= 1;
-                // вывод анимации монеты в 1 рублей
-                await Task.Delay(1000); //temp
+                await CoinOutAnimation(1);
             }
 
             mainScreen.Content = $"{totalAmount} ₽";
         }
+
 
         private async void noKey_printErr()
         {
