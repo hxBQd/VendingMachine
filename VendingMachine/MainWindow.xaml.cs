@@ -11,6 +11,7 @@ using System.Windows.Shapes;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using System.Windows.Media.Animation;
 
 
 namespace VendingMachine
@@ -21,6 +22,9 @@ namespace VendingMachine
         private bool discountApplied = false;
         private string enteredText = "";
         private Dictionary<string, int> code_price = new Dictionary<string, int> { { "A01", 59 }, { "A02", 68 }, { "A17", 169 } };
+        private Dictionary<int, Image> value_money;
+
+
 
         private double previousLeft;
         private double previousTop;
@@ -28,41 +32,52 @@ namespace VendingMachine
         public MainWindow()
         {
             InitializeComponent();
-            previousLeft = this.Left;
-            previousTop = this.Top;
+
+            value_money = new Dictionary<int, Image>
+            {
+                { 1, rub1Image },
+                { 2, rub2Image },
+                { 5, rub5Image },
+                { 10, rub10Image },
+                { 50, rub50Image },
+                { 100, rub100Image }
+            };
             //CoinPopup.IsOpen = true;
             //BanknotePopup.IsOpen = true;
             //CardPopup.IsOpen = true;
 
+            //previousLeft = this.Left;
+            //previousTop = this.Top;
+
         }
 
-        private void Window_LocationChanged(object sender, System.EventArgs e)
-        {
-            MessageBox.Show("Window_LocationChanged вызвано!");
-            if (CoinPopup.IsOpen)
-            {
-                double deltaX = this.Left - previousLeft;
-                double deltaY = this.Top - previousTop;
-                CoinPopup.HorizontalOffset += deltaX;
-                CoinPopup.VerticalOffset += deltaY;
-            }
-            if (BanknotePopup.IsOpen)
-            {
-                double deltaX = this.Left - previousLeft;
-                double deltaY = this.Top - previousTop;
-                BanknotePopup.HorizontalOffset += deltaX;
-                BanknotePopup.VerticalOffset += deltaY;
-            }
-            if (CardPopup.IsOpen)
-            {
-                double deltaX = this.Left - previousLeft;
-                double deltaY = this.Top - previousTop;
-                CardPopup.HorizontalOffset += deltaX;
-                CardPopup.VerticalOffset += deltaY;
-            }
-            previousLeft = this.Left;
-            previousTop = this.Top;
-        }
+        //private void Window_LocationChanged(object sender, System.EventArgs e)
+        //{
+        //    MessageBox.Show("Window_LocationChanged вызвано!");
+        //    if (CoinPopup.IsOpen)
+        //    {
+        //        double deltaX = this.Left - previousLeft;
+        //        double deltaY = this.Top - previousTop;
+        //        CoinPopup.HorizontalOffset += deltaX;
+        //        CoinPopup.VerticalOffset += deltaY;
+        //    }
+        //    if (BanknotePopup.IsOpen)
+        //    {
+        //        double deltaX = this.Left - previousLeft;
+        //        double deltaY = this.Top - previousTop;
+        //        BanknotePopup.HorizontalOffset += deltaX;
+        //        BanknotePopup.VerticalOffset += deltaY;
+        //    }
+        //    if (CardPopup.IsOpen)
+        //    {
+        //        double deltaX = this.Left - previousLeft;
+        //        double deltaY = this.Top - previousTop;
+        //        CardPopup.HorizontalOffset += deltaX;
+        //        CardPopup.VerticalOffset += deltaY;
+        //    }
+        //    previousLeft = this.Left;
+        //    previousTop = this.Top;
+        //}
 
 
         private async void checkTotalAmount_giveItemOrNot(string mainScreenText)
@@ -153,10 +168,6 @@ namespace VendingMachine
                 //if (mainScreenText[mainScreenText.Length - 1] == '₽'
                 //    || mainScreenText == "ERR"
                 //    || mainScreenText == "DISC 50%")
-
-
-
-
                 //mainScreen.Content = enteredText;
 
 
@@ -218,43 +229,154 @@ namespace VendingMachine
             CardPopup.IsOpen = true;
         }
 
-        private void CoinButton_Click(object sender, RoutedEventArgs e)
+        private async void CoinAnimation(int value)
+        {
+            Image cur_coin = value_money[value];
+
+            cur_coin.Visibility = Visibility.Visible;
+            // Анимация движения влево
+            DoubleAnimation moveLeft = new DoubleAnimation
+            {
+                From = 662,
+                To = 490,
+                Duration = TimeSpan.FromSeconds(1) // 1 секунда на движение
+            };
+            cur_coin.BeginAnimation(Canvas.LeftProperty, moveLeft);
+
+            await Task.Delay(1000); // Ждем завершения анимации (1 секунда)
+
+            hideCoinImage.Visibility = Visibility.Visible;
+            
+            // Анимация движения вверх
+            DoubleAnimation moveUp = new DoubleAnimation
+            {
+                From = 413,
+                To = 375,
+                Duration = TimeSpan.FromSeconds(1), // 1 секунда на движение
+                //EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseInOut }
+            };
+            cur_coin.BeginAnimation(Canvas.TopProperty, moveUp);
+
+            await Task.Delay(1000); // Ждем завершения анимации (1 секунда)
+
+            cur_coin.BeginAnimation(Canvas.LeftProperty, null); // Останавливаем анимацию Left
+            cur_coin.BeginAnimation(Canvas.TopProperty, null);
+
+            cur_coin.Visibility = Visibility.Hidden;
+            Canvas.SetLeft(cur_coin, 662);
+            Canvas.SetTop(cur_coin, 413);
+            hideCoinImage.Visibility = Visibility.Hidden;
+        }
+
+        private async void CoinButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && int.TryParse(button.Tag.ToString(), out int value))
             {
+                CoinPopup.IsOpen = false;
+                CoinAnimation(value);
+                await Task.Delay(2500); // wait until animation gone
                 totalAmount += value;
                 mainScreen.Content = $"{totalAmount} ₽";
-                CoinPopup.IsOpen = false;
             }
         }
 
-        private void BanknoteButton_Click(object sender, RoutedEventArgs e)
+        private async void BanknoteAnimation(int value)
+        {
+            Image cur_banknote = value_money[value];
+
+            cur_banknote.Visibility = Visibility.Visible;
+            // Анимация движения влево
+            DoubleAnimation moveLeft = new DoubleAnimation
+            {
+                From = 670,
+                To = 468,
+                Duration = TimeSpan.FromSeconds(1) // 1 секунда на движение
+            };
+            cur_banknote.BeginAnimation(Canvas.LeftProperty, moveLeft);
+
+            await Task.Delay(1000); // Ждем завершения анимации (1 секунда)
+
+            hideBanknoteImage.Visibility = Visibility.Visible;
+
+            // Анимация движения вверх
+            DoubleAnimation moveUp = new DoubleAnimation
+            {
+                From = 381,
+                To = 280,
+                Duration = TimeSpan.FromSeconds(1), // 1 секунда на движение
+                //EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseInOut }
+            };
+            cur_banknote.BeginAnimation(Canvas.TopProperty, moveUp);
+
+            await Task.Delay(1000); // Ждем завершения анимации (1 секунда)
+
+            cur_banknote.BeginAnimation(Canvas.LeftProperty, null); // Останавливаем анимацию Left
+            cur_banknote.BeginAnimation(Canvas.TopProperty, null);
+
+            cur_banknote.Visibility = Visibility.Hidden;
+            Canvas.SetLeft(cur_banknote, 670);
+            Canvas.SetTop(cur_banknote, 381);
+            hideBanknoteImage.Visibility = Visibility.Hidden;
+        }
+        private async void BanknoteButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && int.TryParse(button.Tag.ToString(), out int value))
             {
+                BanknotePopup.IsOpen = false;
+                BanknoteAnimation(value);
+                await Task.Delay(2500);
                 totalAmount += value;
                 mainScreen.Content = $"{totalAmount} ₽";
-                BanknotePopup.IsOpen = false;
             }
+        }
+
+        private async void vipCardAnimation()
+        {
+            VipCardImage.Visibility = Visibility.Visible;
+            // Анимация движения влево (с 653 до 453)
+            DoubleAnimation moveLeft = new DoubleAnimation
+            {
+                From = 653,
+                To = 453,
+                Duration = TimeSpan.FromSeconds(1) // 1 секунда на движение
+            };
+            VipCardImage.BeginAnimation(Canvas.LeftProperty, moveLeft);
+
+            await Task.Delay(1000); // Ждем завершения анимации (1 секунда)
+
+            // Пауза 0.5 секунды
+            await Task.Delay(500);
+
+            // Анимация возвращения вправо (с 453 до 653)
+            DoubleAnimation moveRight = new DoubleAnimation
+            {
+                From = 453,
+                To = 653,
+                Duration = TimeSpan.FromSeconds(1) // 1 секунда на возвращение
+            };
+            VipCardImage.BeginAnimation(Canvas.LeftProperty, moveRight);
+            await Task.Delay(1000); // Ждем завершения анимации (1 секунда)
+            VipCardImage.Visibility = Visibility.Hidden;
         }
 
         private async void CardButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button)
             {
+                CardPopup.IsOpen = false;
                 if (button.Tag.ToString() == "Yes")
                 {
+                    vipCardAnimation(); // анимация карточки
                     discountApplied = true;
+                    await Task.Delay(1000); // wait until card animation works
                     mainScreen.Content = "DISC 50%";
                     await Task.Delay(1000);
                     mainScreen.Content = $"{totalAmount} ₽";
-                    // анимация карточки
                 }
                 else
                 {
                     discountApplied = false;
                 }
-                CardPopup.IsOpen = false;
             }
         }
     }

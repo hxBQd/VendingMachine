@@ -5,14 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VendingMachine"
         mc:Ignorable="d"
-        Title="Vending Machine" Height="900" Width="622" WindowStyle="ThreeDBorderWindow" LocationChanged="Window_LocationChanged">
+        Title="Vending Machine" Height="900" Width="622" WindowStyle="ThreeDBorderWindow">
+    <!--LocationChanged="Window_LocationChanged"-->
     <Window.Resources>
         <Style x:Key="KeyboardElement" TargetType="Button">
             <Setter Property="Margin" Value="4,3,4,3"/>
             <Setter Property="Width" Value="19"/>
             <Setter Property="Height" Value="19"/>
         </Style>
-
+        <!--BorderBrush="Red" BorderThickness="2"-->
         <Style x:Key="NoLight" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
@@ -21,8 +22,10 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}" 
-                            BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
+                            <!--"Red" -->
+                            <!--"2"-->
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
@@ -112,7 +115,7 @@
                 VerticalContentAlignment="Center" ScrollViewer.VerticalScrollBarVisibility="Disabled" Foreground="#FF018317" FontFamily="DS-Digital"
                 UseLayoutRounding="True" FontSize="16" Canvas.Left="443" Canvas.Top="58"/>
         <!--0 ₽ NEED: 100 ₽&#x0a;HAVE: 50 ₽ DS-Digital-->
-        
+
         <!--Клавиатура автомата-->
         <Grid Margin="443,152,10,10">
             <Grid.RowDefinitions>
@@ -164,7 +167,28 @@
                 Grid.Row="4" Canvas.Left="450" Canvas.Top="439" HorizontalAlignment="Center" VerticalAlignment="Center" Width="70" 
                 Style="{StaticResource NoLight}"/>
 
+        <!--возврат бабла у монетприёмника-->
         <Button Click="returnMoney" Canvas.Left="459" Canvas.Top="397" Height="15" Width="15" Style="{StaticResource RoundButtonStyle}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+        <Image x:Name="VipCardImage" Height="45" Canvas.Left="653" Canvas.Top="438" Width="67" Source="img/vip_card.png" Visibility="Hidden" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+        <Image x:Name="rub100Image" Height="74" Canvas.Left="670" Canvas.Top="381" Width="32" Source="img/100rub.png" Visibility="Hidden"/>
+        <Image x:Name="rub50Image" Height="74" Canvas.Left="670" Canvas.Top="381" Width="32" Source="img/50rub.png" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Hidden"/>
+        <!--Canvas.Left="670" Canvas.Top="381"-->
+
+        <Image x:Name="rub10Image" Height="25" Canvas.Left="662" Canvas.Top="413" Width="25" Source="img/10rub.png" Visibility="Hidden"/>
+        <Image x:Name="rub1Image" Height="25" Canvas.Left="662" Canvas.Top="413" Width="24" Source="img/1rub.png" Visibility="Hidden"/>
+        <Image x:Name="rub5Image" Height="25" Canvas.Left="662" Canvas.Top="413" Width="25" Source="img/5rub.png" Visibility="Hidden"/>
+        <Image x:Name="rub2Image" Height="25" Canvas.Left="662" Canvas.Top="413" Width="25" Source="img/2rub.png" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Hidden"/>
+
+        <!--<Image Height="25" Canvas.Left="662" Canvas.Top="413" Width="24" Source="img/1rub.png"/>-->
+        <!--Visible  Hidden-->
+
+        <!--ёбанный костыль для прятки монет-->
+        <Image x:Name="hideCoinImage" Height="40" Canvas.Left="483" Canvas.Top="364" Width="38" Source="img/hide_coin.png" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Hidden"/>
+
+        <!--ёбанный костыль для прятки купюр-->
+        <Image x:Name="hideBanknoteImage" Height="90" Canvas.Left="447" Canvas.Top="276" Width="74" Source="img/hide_banknote.png" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Hidden"/>
     </Canvas>
 
 </Window>
