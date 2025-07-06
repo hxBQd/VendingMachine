@@ -363,4 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 
 /VendingMachine/report/*.mp4
-"VendingMachine/temp/" 
+/VendingMachine/temp/* 
