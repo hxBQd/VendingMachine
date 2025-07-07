@@ -95,7 +95,8 @@
             <Border Background="White" CornerRadius="10" Padding="10" BorderBrush="Black" BorderThickness="1">
                 <StackPanel>
                     <Button Content="50 р" Click="BanknoteButton_Click" Tag="50"/>
-                    <Button Content="100 р" Click="BanknoteButton_Click" Tag="1000000"/> <!--debug 100-->
+                    <Button Content="100 р" Click="BanknoteButton_Click" Tag="100"/>
+                    <!--debug 1000000-->
                 </StackPanel>
             </Border>
         </Popup>

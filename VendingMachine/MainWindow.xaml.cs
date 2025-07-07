@@ -91,7 +91,7 @@ namespace VendingMachine
         private bool isAnimationBanknote = false;
         private bool isAnimationCoin = false;
         private bool isAnimationCard = false;
-        private bool isAnimationItem = false;
+        private SemaphoreSlim animationSemaphore = new SemaphoreSlim(1, 1); // Ограничивает до 1 параллельной анимации
         private Queue<string> animationItemQueue = new Queue<string>();
         private bool isAnimationCoinOut = false;
     
@@ -110,8 +110,8 @@ namespace VendingMachine
                 { 5, rub5Image },
                 { 10, rub10Image },
                 { 50, rub50Image },
-                { 100, rub100Image },
-                { 1000000, rub100Image} // for debug
+                { 100, rub100Image }//,
+                //{ 1000000, rub100Image} // for debug
             };
 
             code_item = new Dictionary<string, ItemRingGroup>
@@ -411,93 +411,79 @@ namespace VendingMachine
             }
             return obj;
         }
-
-        private void swap_ring_item(ItemRingGroup obj, int ring_i, int item_i)
-        {
-            for (int i = 0; i < obj.Rings.Count; i++)
-            {
-                Canvas.SetZIndex(obj.Rings[i], ring_i);
-            }
-            Canvas.SetZIndex(obj.Item, item_i);
-        }
         private async Task ItemAnimation(string mainScreenText)
         {
-
-            //while (isAnimationItem)
-            //{
-            //    await Task.Delay(100);
-            //}
-
-            //isAnimationItem = true;
-
-            ItemRingGroup obj = doRingRotateAndReturnItemRingsImages(mainScreenText);
-
-            await Task.Delay(1000); // wait ?
-            //swap_ring_item(obj, 2, 3); // ring and item have just swapped
-            Canvas.SetZIndex(obj.Item, 4); // for covering items and rings,
-                                           // but be under lid and external body of vendmachine
-            await Task.Delay(1000);
-
-            //obj.Item.BeginAnimation(Canvas.TopProperty, null);
-            //obj.ItemRotation.BeginAnimation(RotateTransform.AngleProperty, null);
-
-            DoubleAnimation moveDown = new DoubleAnimation
+            await animationSemaphore.WaitAsync(); // Ждем, пока семафор освободится
+            try
             {
-                From = Canvas.GetTop(obj.Item),
-                To = 620,
-                Duration = TimeSpan.FromSeconds(2)
-            };
-            DoubleAnimation rotateItem = new DoubleAnimation
-            {
-                From = 0,
-                To = 360,
-                Duration = TimeSpan.FromSeconds(2),
-                RepeatBehavior = RepeatBehavior.Forever
-            };
+                ItemRingGroup obj = doRingRotateAndReturnItemRingsImages(mainScreenText);
 
-            obj.Item.BeginAnimation(Canvas.TopProperty, moveDown);
-            obj.ItemRotation.BeginAnimation(RotateTransform.AngleProperty, rotateItem);
+                await Task.Delay(1000); // wait ?
+                Canvas.SetZIndex(obj.Item, 4); // for covering items and rings,
+                                               // but be under lid and external body of vendmachine
+                await Task.Delay(1000);
 
-            await Task.Delay(2500);
 
-            obj.Item.BeginAnimation(Canvas.TopProperty, null);
-            obj.ItemRotation.BeginAnimation(RotateTransform.AngleProperty, null);
+                DoubleAnimation moveDown = new DoubleAnimation
+                {
+                    From = Canvas.GetTop(obj.Item),
+                    To = 620,
+                    Duration = TimeSpan.FromSeconds(2)
+                };
+                DoubleAnimation rotateItem = new DoubleAnimation
+                {
+                    From = 0,
+                    To = 360,
+                    Duration = TimeSpan.FromSeconds(2),
+                    RepeatBehavior = RepeatBehavior.Forever
+                };
 
-            Canvas.SetLeft(obj.Item, 222);
-            Canvas.SetTop(obj.Item, 669);
+                obj.Item.BeginAnimation(Canvas.TopProperty, moveDown);
+                obj.ItemRotation.BeginAnimation(RotateTransform.AngleProperty, rotateItem);
 
-            for (int i = 0; i < lids.Length - 1; i++)
-            {
-                lids[i].Visibility = Visibility.Hidden;
-                lids[i + 1].Visibility = Visibility.Visible;
-                await Task.Delay(500);
+                await Task.Delay(2500);
+
+                obj.Item.BeginAnimation(Canvas.TopProperty, null);
+                obj.ItemRotation.BeginAnimation(RotateTransform.AngleProperty, null);
+
+                Canvas.SetLeft(obj.Item, 222);
+                Canvas.SetTop(obj.Item, 669);
+
+                for (int i = 0; i < lids.Length - 1; i++)
+                {
+                    lids[i].Visibility = Visibility.Hidden;
+                    lids[i + 1].Visibility = Visibility.Visible;
+                    await Task.Delay(500);
+                }
+
+                Canvas.SetZIndex(obj.Item, 6);
+                DoubleAnimation moveLeft = new DoubleAnimation
+                {
+                    From = Canvas.GetLeft(obj.Item),
+                    To = -159,
+                    Duration = TimeSpan.FromSeconds(2)
+                };
+                obj.Item.BeginAnimation(Canvas.LeftProperty, moveLeft);
+
+
+                for (int i = lids.Length - 1; i > 0; i--)
+                {
+                    lids[i].Visibility = Visibility.Hidden;
+                    lids[i - 1].Visibility = Visibility.Visible;
+                    await Task.Delay(500);
+                }
+                await Task.Delay(2000);
+
+                obj.Item.BeginAnimation(Canvas.LeftProperty, null);
+
+                Canvas.SetZIndex(obj.Item, 2);
+                Canvas.SetLeft(obj.Item, Canvas.GetLeft(obj.SourceItem));
+                Canvas.SetTop(obj.Item, Canvas.GetTop(obj.SourceItem));
             }
-
-            Canvas.SetZIndex(obj.Item, 6);
-            DoubleAnimation moveLeft = new DoubleAnimation
+            finally
             {
-                From = Canvas.GetLeft(obj.Item),
-                To = -59,
-                Duration = TimeSpan.FromSeconds(2)
-            };
-            obj.Item.BeginAnimation(Canvas.LeftProperty, moveLeft);
-
-
-            for (int i = lids.Length - 1; i > 0; i--)
-            {
-                lids[i].Visibility = Visibility.Hidden;
-                lids[i - 1].Visibility = Visibility.Visible;
-                await Task.Delay(500);
+                animationSemaphore.Release(); // Освобождаем семафор
             }
-            await Task.Delay(2000);
-
-            obj.Item.BeginAnimation(Canvas.LeftProperty, null);
-
-            Canvas.SetZIndex(obj.Item, 2);
-            Canvas.SetLeft(obj.Item, Canvas.GetLeft(obj.SourceItem));
-            Canvas.SetTop(obj.Item, Canvas.GetTop(obj.SourceItem));
-
-            //isAnimationItem = false;
         }
         private async void checkTotalAmount_giveItemOrNot(string mainScreenText)
         {
