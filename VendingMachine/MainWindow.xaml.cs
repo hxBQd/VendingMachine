@@ -16,15 +16,85 @@ using System.Windows.Media.Animation;
 
 namespace VendingMachine
 {
+    public class ItemRingGroup
+    {
+        public Image Item { get; set; }
+        public RotateTransform ItemRotation { get; set; }
+        public List<Image> Rings { get; set; }  // Может быть 1 или 2 кольца
+        public List<RotateTransform> Rotations { get; set; } 
+        //public double source_item_top {  get; set; }
+        //public double source_item_left { get; set; }
+
+        public Image SourceItem { get; set;  }
+
+        public ItemRingGroup() {
+            Rings = new List<Image>();
+            Rotations = new List<RotateTransform>();
+        }
+        public ItemRingGroup(Image item, RotateTransform item_rotation, List<Image> rings, List<RotateTransform> rotations, Image source_item)
+        {
+            Item = item;
+            ItemRotation = item_rotation;
+            Rings = rings;
+            Rotations = rotations;
+            SourceItem = source_item;
+            //source_item_left = Canvas.GetLeft(item);
+            //source_item_top = Canvas.GetTop(item);
+        }
+    }
+
     public partial class MainWindow : Window
     {
         private int totalAmount = 0;
         private bool discountApplied = false;
         private string enteredText = "";
-        private Dictionary<string, int> code_price = new Dictionary<string, int> { { "A01", 59 }, { "A02", 68 }, { "A17", 169 } };
+
+        private Dictionary<string, int> code_price = new Dictionary<string, int>
+        {
+            { "A01", 59 },
+            { "A02", 68 },
+            { "A03", 63 },
+            { "A04", 85 },
+            { "A05", 129 },
+            { "A06", 74 },
+            { "A07", 69 },
+            { "A08", 79 },
+            { "A09", 45 },
+            { "A10", 299 },
+            { "A11", 409 },
+            { "A12", 115 },
+            { "A13", 32 },
+            { "A14", 78 },
+            { "A15", 549 },
+            { "A16", 119 },
+            { "A17", 169 },
+            { "A18", 499 },
+            { "A19", 74 },
+            { "A20", 129 },
+            { "A21", 822 },
+            { "A22", 51 },
+            { "A23", 169 },
+            { "A24", 145 },
+            { "A25", 260 },
+            { "A26", 54 },
+            { "A27", 34 },
+            { "A28", 60 },
+            { "A29", 134 },
+            { "A30", 25 },
+            { "A31", 29 },
+            { "A32", 42 }
+        };
         private Dictionary<int, Image> value_money;
+        private Dictionary<string, ItemRingGroup> code_item;
+        private Image[] lids;
 
-
+        private bool isAnimationBanknote = false;
+        private bool isAnimationCoin = false;
+        private bool isAnimationCard = false;
+        private SemaphoreSlim animationSemaphore = new SemaphoreSlim(1, 1); // Ограничивает до 1 параллельной анимации
+        private Queue<string> animationItemQueue = new Queue<string>();
+        private bool isAnimationCoinOut = false;
+    
 
         private double previousLeft;
         private double previousTop;
@@ -40,8 +110,56 @@ namespace VendingMachine
                 { 5, rub5Image },
                 { 10, rub10Image },
                 { 50, rub50Image },
-                { 100, rub100Image }
+                { 100, rub100Image }//,
+                //{ 1000000, rub100Image} // for debug
             };
+
+            code_item = new Dictionary<string, ItemRingGroup>
+            {
+                {"A01", new ItemRingGroup {Item = itemA01, ItemRotation=itemA01Rotation, Rings = new List<Image> { ringA01 }, Rotations = new List<RotateTransform> { ringA01Rotation }, SourceItem=itemA01_back } },
+                {"A02", new ItemRingGroup {Item = itemA02, ItemRotation=itemA02Rotation, Rings = new List<Image> { ringA02 }, Rotations = new List<RotateTransform> { ringA02Rotation }, SourceItem=itemA02_back } },
+                {"A03", new ItemRingGroup {Item = itemA03, ItemRotation=itemA03Rotation, Rings = new List<Image> { ringA03 }, Rotations = new List<RotateTransform> { ringA03Rotation }, SourceItem=itemA03_back } },
+                {"A04", new ItemRingGroup {Item = itemA04, ItemRotation=itemA04Rotation, Rings = new List<Image> { ringA04 }, Rotations = new List<RotateTransform> { ringA04Rotation }, SourceItem=itemA04_back } },
+                {"A05", new ItemRingGroup {Item = itemA05, ItemRotation=itemA05Rotation, Rings = new List<Image> { ringA05 }, Rotations = new List<RotateTransform> { ringA05Rotation }, SourceItem=itemA05_back } },
+                {"A06", new ItemRingGroup {Item = itemA06, ItemRotation=itemA06Rotation, Rings = new List<Image> { ringA06 }, Rotations = new List<RotateTransform> { ringA06Rotation }, SourceItem=itemA06_back } },
+                {"A07", new ItemRingGroup {Item = itemA07, ItemRotation=itemA07Rotation, Rings = new List<Image> { ringA07 }, Rotations = new List<RotateTransform> { ringA07Rotation }, SourceItem=itemA07_back } },
+                {"A08", new ItemRingGroup {Item = itemA08, ItemRotation=itemA08Rotation, Rings = new List<Image> { ringA08 }, Rotations = new List<RotateTransform> { ringA08Rotation }, SourceItem=itemA08_back } },
+                {"A09", new ItemRingGroup {Item = itemA09, ItemRotation=itemA09Rotation, Rings = new List<Image> { ringA09 }, Rotations = new List<RotateTransform> { ringA09Rotation }, SourceItem=itemA09_back } },
+                {"A10", new ItemRingGroup {Item = itemA10, ItemRotation=itemA10Rotation, Rings = new List<Image> { ringA10 }, Rotations = new List<RotateTransform> { ringA10Rotation }, SourceItem=itemA10_back } },
+                {"A11", new ItemRingGroup {Item = itemA11, ItemRotation=itemA11Rotation, Rings = new List<Image> { ringA11 }, Rotations = new List<RotateTransform> { ringA11Rotation }, SourceItem=itemA11_back } },
+                {"A12", new ItemRingGroup {Item = itemA12, ItemRotation=itemA12Rotation, Rings = new List<Image> { ringA12 }, Rotations = new List<RotateTransform> { ringA12Rotation }, SourceItem=itemA12_back } },
+                {"A13", new ItemRingGroup {Item = itemA13, ItemRotation=itemA13Rotation, Rings = new List<Image> { ringA13 }, Rotations = new List<RotateTransform> { ringA13Rotation }, SourceItem=itemA13_back } },
+                {"A14", new ItemRingGroup {Item = itemA14, ItemRotation=itemA14Rotation, Rings = new List<Image> { ringA14 }, Rotations = new List<RotateTransform> { ringA14Rotation }, SourceItem=itemA14_back } },
+                {"A15", new ItemRingGroup {Item = itemA15, ItemRotation=itemA15Rotation, Rings = new List<Image> { ringA15 }, Rotations = new List<RotateTransform> { ringA15Rotation }, SourceItem=itemA15_back } },
+                {"A16", new ItemRingGroup {Item = itemA16, ItemRotation=itemA16Rotation, Rings = new List<Image> { ringA16 }, Rotations = new List<RotateTransform> { ringA16Rotation }, SourceItem=itemA16_back } },
+
+                {"A17", new ItemRingGroup {Item = itemA17, ItemRotation=itemA17Rotation, Rings = new List<Image> { ringA17, ringA17_1 }, Rotations = new List<RotateTransform> { ringA17Rotation, ringA17_1Rotation }, SourceItem=itemA17_back } },
+                {"A18", new ItemRingGroup {Item = itemA18, ItemRotation=itemA18Rotation, Rings = new List<Image> { ringA18, ringA18_1 }, Rotations = new List<RotateTransform> { ringA18Rotation, ringA18_1Rotation }, SourceItem=itemA18_back } },
+                {"A19", new ItemRingGroup {Item = itemA19, ItemRotation=itemA19Rotation, Rings = new List<Image> { ringA19, ringA19_1 }, Rotations = new List<RotateTransform> { ringA19Rotation, ringA19_1Rotation }, SourceItem=itemA19_back } },
+                {"A20", new ItemRingGroup {Item = itemA20, ItemRotation=itemA20Rotation, Rings = new List<Image> { ringA20, ringA20_1 }, Rotations = new List<RotateTransform> { ringA20Rotation, ringA20_1Rotation }, SourceItem=itemA20_back } },
+                {"A21", new ItemRingGroup {Item = itemA21, ItemRotation=itemA21Rotation, Rings = new List<Image> { ringA21, ringA21_1 }, Rotations = new List<RotateTransform> { ringA21Rotation, ringA21_1Rotation }, SourceItem=itemA21_back } },
+                {"A22", new ItemRingGroup {Item = itemA22, ItemRotation=itemA22Rotation, Rings = new List<Image> { ringA22, ringA22_1 }, Rotations = new List<RotateTransform> { ringA22Rotation, ringA22_1Rotation }, SourceItem=itemA22_back } },
+                {"A23", new ItemRingGroup {Item = itemA23, ItemRotation=itemA23Rotation, Rings = new List<Image> { ringA23, ringA23_1 }, Rotations = new List<RotateTransform> { ringA23Rotation, ringA23_1Rotation }, SourceItem=itemA23_back } },
+                {"A24", new ItemRingGroup {Item = itemA24, ItemRotation=itemA24Rotation, Rings = new List<Image> { ringA24, ringA24_1 }, Rotations = new List<RotateTransform> { ringA24Rotation, ringA24_1Rotation }, SourceItem=itemA24_back } },
+
+                {"A25", new ItemRingGroup {Item = itemA25, ItemRotation=itemA25Rotation, Rings = new List<Image> { ringA25 }, Rotations = new List<RotateTransform> { ringA25Rotation }, SourceItem=itemA25_back } },
+                {"A26", new ItemRingGroup {Item = itemA26, ItemRotation=itemA26Rotation, Rings = new List<Image> { ringA26 }, Rotations = new List<RotateTransform> { ringA26Rotation }, SourceItem=itemA26_back } },
+                {"A27", new ItemRingGroup {Item = itemA27, ItemRotation=itemA27Rotation, Rings = new List<Image> { ringA27 }, Rotations = new List<RotateTransform> { ringA27Rotation }, SourceItem=itemA27_back } },
+                {"A28", new ItemRingGroup {Item = itemA28, ItemRotation=itemA28Rotation, Rings = new List<Image> { ringA28 }, Rotations = new List<RotateTransform> { ringA28Rotation }, SourceItem=itemA28_back } },
+                {"A29", new ItemRingGroup {Item = itemA29, ItemRotation=itemA29Rotation, Rings = new List<Image> { ringA29 }, Rotations = new List<RotateTransform> { ringA29Rotation }, SourceItem=itemA29_back } },
+                {"A30", new ItemRingGroup {Item = itemA30, ItemRotation=itemA30Rotation, Rings = new List<Image> { ringA30 }, Rotations = new List<RotateTransform> { ringA30Rotation }, SourceItem=itemA30_back } },
+                {"A31", new ItemRingGroup {Item = itemA31, ItemRotation=itemA31Rotation, Rings = new List<Image> { ringA31 }, Rotations = new List<RotateTransform> { ringA31Rotation }, SourceItem=itemA31_back } },
+                {"A32", new ItemRingGroup {Item = itemA32, ItemRotation=itemA32Rotation, Rings = new List<Image> { ringA32 }, Rotations = new List<RotateTransform> { ringA32Rotation }, SourceItem=itemA32_back } }
+            };
+
+            lids = new Image[]
+            {
+                lid_closed,
+                lid_half_closed,
+                lid_almost_opened,
+                lid_opened
+            };
+
             //CoinPopup.IsOpen = true;
             //BanknotePopup.IsOpen = true;
             //CardPopup.IsOpen = true;
@@ -83,30 +201,6 @@ namespace VendingMachine
         //    previousLeft = this.Left;
         //    previousTop = this.Top;
         //}
-
-
-        private async void checkTotalAmount_giveItemOrNot(string mainScreenText)
-        {
-            int totalPrice = Convert.ToInt32(Math.Ceiling(code_price[mainScreenText] * (0.5 + 0.5 * (discountApplied ? 0 : 1))));
-            mainScreen.Content = $"NEED: {totalPrice}₽\nHAVE: {totalAmount}₽";
-            await Task.Delay(5000);
-            if (totalPrice <= totalAmount)
-            {
-                mainScreen.Content = "SUCCESS";
-                totalAmount -= totalPrice;
-                if (discountApplied)
-                {
-                    discountApplied = false;
-                }
-                // TODO: сделать анимацию падения сраного товара
-            }
-            else
-            {
-                mainScreen.Content = "NEED MORE\nMONEY ₽"; // ERR
-            }
-            await Task.Delay(5000);
-            mainScreen.Content = $"{totalAmount} ₽";
-        }
         
         // не удалять, другая версия анимации выдачи сдачи, тоже очень хорошая
         // можно спокойно использовать эти 2 функции, работаю нормально
@@ -249,6 +343,13 @@ namespace VendingMachine
 
         private async void returnMoney(object sender, RoutedEventArgs e)
         {
+            while (isAnimationCoinOut)
+            {
+                await Task.Delay(100);
+            }
+
+            isAnimationCoinOut = true;
+
             enteredText = "";
 
             int amount10 = totalAmount / 10;
@@ -288,8 +389,131 @@ namespace VendingMachine
             }
 
             mainScreen.Content = $"{totalAmount} ₽";
+
+            isAnimationCoinOut = false;
+
         }
 
+        private ItemRingGroup doRingRotateAndReturnItemRingsImages(string mainScreenText)
+        {
+            ItemRingGroup obj = code_item[mainScreenText];
+            List<DoubleAnimation> rotateRings = new List<DoubleAnimation>();
+            DoubleAnimation rotateAnimation = new DoubleAnimation
+            {
+                From = 0,
+                To = 360,
+                Duration = TimeSpan.FromSeconds(4),
+                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseInOut }
+            };
+            for (int i = 0; i < obj.Rotations.Count; i++)
+            {
+                obj.Rotations[i].BeginAnimation(RotateTransform.AngleProperty, rotateAnimation);
+            }
+            return obj;
+        }
+        private async Task ItemAnimation(string mainScreenText)
+        {
+            await animationSemaphore.WaitAsync(); // Ждем, пока семафор освободится
+            try
+            {
+                ItemRingGroup obj = doRingRotateAndReturnItemRingsImages(mainScreenText);
+
+                await Task.Delay(1000); // wait ?
+                Canvas.SetZIndex(obj.Item, 4); // for covering items and rings,
+                                               // but be under lid and external body of vendmachine
+                await Task.Delay(1000);
+
+
+                DoubleAnimation moveDown = new DoubleAnimation
+                {
+                    From = Canvas.GetTop(obj.Item),
+                    To = 620,
+                    Duration = TimeSpan.FromSeconds(2)
+                };
+                DoubleAnimation rotateItem = new DoubleAnimation
+                {
+                    From = 0,
+                    To = 360,
+                    Duration = TimeSpan.FromSeconds(2),
+                    RepeatBehavior = RepeatBehavior.Forever
+                };
+
+                obj.Item.BeginAnimation(Canvas.TopProperty, moveDown);
+                obj.ItemRotation.BeginAnimation(RotateTransform.AngleProperty, rotateItem);
+
+                await Task.Delay(2500);
+
+                obj.Item.BeginAnimation(Canvas.TopProperty, null);
+                obj.ItemRotation.BeginAnimation(RotateTransform.AngleProperty, null);
+
+                Canvas.SetLeft(obj.Item, 222);
+                Canvas.SetTop(obj.Item, 669);
+
+                for (int i = 0; i < lids.Length - 1; i++)
+                {
+                    lids[i].Visibility = Visibility.Hidden;
+                    lids[i + 1].Visibility = Visibility.Visible;
+                    await Task.Delay(500);
+                }
+
+                Canvas.SetZIndex(obj.Item, 6);
+                DoubleAnimation moveLeft = new DoubleAnimation
+                {
+                    From = Canvas.GetLeft(obj.Item),
+                    To = -159,
+                    Duration = TimeSpan.FromSeconds(2)
+                };
+                obj.Item.BeginAnimation(Canvas.LeftProperty, moveLeft);
+
+
+                for (int i = lids.Length - 1; i > 0; i--)
+                {
+                    lids[i].Visibility = Visibility.Hidden;
+                    lids[i - 1].Visibility = Visibility.Visible;
+                    await Task.Delay(500);
+                }
+                await Task.Delay(2000);
+
+                obj.Item.BeginAnimation(Canvas.LeftProperty, null);
+
+                Canvas.SetZIndex(obj.Item, 2);
+                Canvas.SetLeft(obj.Item, Canvas.GetLeft(obj.SourceItem));
+                Canvas.SetTop(obj.Item, Canvas.GetTop(obj.SourceItem));
+            }
+            finally
+            {
+                animationSemaphore.Release(); // Освобождаем семафор
+            }
+        }
+        private async void checkTotalAmount_giveItemOrNot(string mainScreenText)
+        {
+            int totalPrice = Convert.ToInt32(Math.Ceiling(code_price[mainScreenText] * (0.5 + 0.5 * (discountApplied ? 0 : 1))));
+            mainScreen.Content = $"NEED: {totalPrice}₽\nHAVE: {totalAmount}₽";
+            await Task.Delay(5000);
+            if (totalPrice <= totalAmount)
+            {
+                mainScreen.Content = "SUCCESS";
+                totalAmount -= totalPrice;
+                if (discountApplied)
+                {
+                    discountApplied = false;
+                }
+                animationItemQueue.Enqueue(mainScreenText);
+
+                while (animationItemQueue.Count > 0)
+                {
+                    string nextItem = animationItemQueue.Dequeue();
+                    await ItemAnimation(nextItem);
+                }
+                //ItemAnimation(mainScreenText);
+            }
+            else
+            {
+                mainScreen.Content = "NEED MORE\nMONEY ₽"; // ERR
+            }
+            await Task.Delay(5000);
+            mainScreen.Content = $"{totalAmount} ₽";
+        }
 
         private async void noKey_printErr()
         {
@@ -369,8 +593,16 @@ namespace VendingMachine
             CardPopup.IsOpen = true;
         }
 
-        private async void CoinAnimation(int value)
+        private async Task CoinAnimation(int value)
         {
+
+            while (isAnimationCoin)
+            {
+                await Task.Delay(100);
+            }
+
+            isAnimationCoin = true;
+
             Image cur_coin = value_money[value];
 
             cur_coin.Visibility = Visibility.Visible;
@@ -406,6 +638,8 @@ namespace VendingMachine
             Canvas.SetLeft(cur_coin, 662);
             Canvas.SetTop(cur_coin, 413);
             hideCoinImage.Visibility = Visibility.Hidden;
+
+            isAnimationCoin = false;
         }
 
         private async void CoinButton_Click(object sender, RoutedEventArgs e)
@@ -413,15 +647,23 @@ namespace VendingMachine
             if (sender is Button button && int.TryParse(button.Tag.ToString(), out int value))
             {
                 CoinPopup.IsOpen = false;
-                CoinAnimation(value);
+                await CoinAnimation(value);
                 await Task.Delay(2500); // wait until animation gone
                 totalAmount += value;
                 mainScreen.Content = $"{totalAmount} ₽";
             }
         }
 
-        private async void BanknoteAnimation(int value)
+        private async Task BanknoteAnimation(int value)
         {
+
+            while (isAnimationBanknote)
+            {
+                await Task.Delay(100); // Короткая задержка перед повторной проверкой
+            }
+
+            isAnimationBanknote = true;
+
             Image cur_banknote = value_money[value];
 
             cur_banknote.Visibility = Visibility.Visible;
@@ -457,21 +699,32 @@ namespace VendingMachine
             Canvas.SetLeft(cur_banknote, 670);
             Canvas.SetTop(cur_banknote, 381);
             hideBanknoteImage.Visibility = Visibility.Hidden;
+
+            isAnimationBanknote = false;
+
         }
         private async void BanknoteButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && int.TryParse(button.Tag.ToString(), out int value))
             {
                 BanknotePopup.IsOpen = false;
-                BanknoteAnimation(value);
+                await BanknoteAnimation(value);
                 await Task.Delay(2500);
                 totalAmount += value;
                 mainScreen.Content = $"{totalAmount} ₽";
             }
         }
 
-        private async void vipCardAnimation()
+        private async Task vipCardAnimation()
         {
+
+            while (isAnimationCard)
+            {
+                await Task.Delay(100);
+            }
+
+            isAnimationCard = true;
+
             VipCardImage.Visibility = Visibility.Visible;
             // Анимация движения влево (с 653 до 453)
             DoubleAnimation moveLeft = new DoubleAnimation
@@ -497,6 +750,7 @@ namespace VendingMachine
             VipCardImage.BeginAnimation(Canvas.LeftProperty, moveRight);
             await Task.Delay(1000); // Ждем завершения анимации (1 секунда)
             VipCardImage.Visibility = Visibility.Hidden;
+            isAnimationCard = false;
         }
 
         private async void CardButton_Click(object sender, RoutedEventArgs e)
@@ -506,7 +760,7 @@ namespace VendingMachine
                 CardPopup.IsOpen = false;
                 if (button.Tag.ToString() == "Yes")
                 {
-                    vipCardAnimation(); // анимация карточки
+                    await vipCardAnimation(); // анимация карточки
                     discountApplied = true;
                     await Task.Delay(1000); // wait until card animation works
                     mainScreen.Content = "DISC 50%";

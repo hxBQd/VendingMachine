@@ -5,15 +5,42 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VendingMachine"
         mc:Ignorable="d"
-        Title="Vending Machine" Height="900" Width="622" WindowStyle="ThreeDBorderWindow">
+        Title="Vending Machine" Height="900" Width="622" WindowStyle="ThreeDBorderWindow" ResizeMode="NoResize">
     <!--LocationChanged="Window_LocationChanged"-->
     <Window.Resources>
+
+        <!-- Стиль чтобы сраная кнопка не светилась и была похожа на кнопку для клавы-->
         <Style x:Key="KeyboardElement" TargetType="Button">
             <Setter Property="Margin" Value="4,3,4,3"/>
             <Setter Property="Width" Value="19"/>
             <Setter Property="Height" Value="19"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                            <!--"Red" -->
+                            <!--"2"-->
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#FFDDDDDD"/>
+                                <Setter Property="BorderBrush" Value="#FF707070"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#FFDDDDDD"/>
+                                <Setter Property="BorderBrush" Value="#FF707070"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
         <!--BorderBrush="Red" BorderThickness="2"-->
+
+        <!-- Стиль чтобы сраная кнопка не светилась-->
         <Style x:Key="NoLight" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
@@ -43,6 +70,7 @@
             </Setter>
         </Style>
 
+        <!-- Стиль чтобы сраная кнопка не светилась и была круглой-->
         <Style x:Key="RoundButtonStyle" TargetType="Button" BasedOn="{StaticResource NoLight}">
             <Setter Property="Template">
                 <Setter.Value>
@@ -68,6 +96,7 @@
                 <StackPanel>
                     <Button Content="50 р" Click="BanknoteButton_Click" Tag="50"/>
                     <Button Content="100 р" Click="BanknoteButton_Click" Tag="100"/>
+                    <!--debug 1000000-->
                 </StackPanel>
             </Border>
         </Popup>
@@ -95,26 +124,645 @@
             </Border>
         </Popup>
 
-        <!--Закрытый автомат-->
-        <Image x:Name="VendingImage" HorizontalAlignment="Left" Height="797" Margin="67,37,0,0" VerticalAlignment="Top" Width="477" Source="img/vend2_closed.png" Grid.ColumnSpan="2"/>
+        <!--Корпус автомата Visible Hidden-->
+        <Image x:Name="VendingImage" HorizontalAlignment="Center" 
+               VerticalAlignment="Top" Width="477" Height="781" Source="img/vend2.png" Grid.ColumnSpan="2" Canvas.ZIndex="0" Visibility="Visible" Canvas.Left="67" Canvas.Top="37"/>
 
+        <!--муляж товаров (всегда неподвижны, всегда стоят на месте имитирует, что товар есть-->
         <!--товары-->
-        <Image HorizontalAlignment="Left" Height="46" Margin="99,76,0,0" VerticalAlignment="Top" Width="17" Source="img/snickers.png"/>
-        <Image HorizontalAlignment="Left" Height="73" Margin="106,248,0,0" VerticalAlignment="Top" Width="51" Source="img/lays_crab.png"/>
-        <Image HorizontalAlignment="Left" Height="46" Margin="136,76,0,0" VerticalAlignment="Top" Width="29" Source="img/pepsi_can.png"/>
-
         <!--кольца блокировки-->
-        <Image HorizontalAlignment="Left" Height="37" Margin="89,85,0,0" VerticalAlignment="Top" Width="37" Source="img/ring.png"/>
-        <Image HorizontalAlignment="Left" Height="37" Margin="131,85,0,0" VerticalAlignment="Top" Width="38" Source="img/ring.png"/>
-        <Image HorizontalAlignment="Left" Height="36" Margin="95,285,0,0" VerticalAlignment="Top" Width="38" Source="img/ring.png"/>
-        <Image HorizontalAlignment="Left" Height="36" Margin="131,285,0,0" VerticalAlignment="Top" Width="38" Source="img/ring.png"/>
+
+
+        <Image x:Name="itemA01_back" HorizontalAlignment="Left" Height="46" VerticalAlignment="Top" Width="17" Source="img/snickers.png" Canvas.Left="100" Canvas.Top="76" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA01" HorizontalAlignment="Left" Height="46" VerticalAlignment="Top" Width="17"
+               Source="img/snickers.png" Canvas.Left="100" Canvas.Top="76" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA01Rotation" CenterX="8.5" CenterY="23" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA01" HorizontalAlignment="Left" Height="38" VerticalAlignment="Top" Width="37" Source="img/ring.png" Canvas.Left="89" Canvas.Top="84" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA01Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <Image x:Name="itemA02_back" HorizontalAlignment="Left" Height="46" VerticalAlignment="Center" Width="29" Source="img/pepsi_can.png" Canvas.Left="136" Canvas.Top="76" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA02" HorizontalAlignment="Left" Height="46" VerticalAlignment="Center"
+               Width="29" Source="img/pepsi_can.png" Canvas.Left="136" Canvas.Top="76" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA02Rotation" CenterX="14.5" CenterY="23" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA02" HorizontalAlignment="Left" Height="38" VerticalAlignment="Center" Width="37" Source="img/ring.png" Canvas.Left="131" Canvas.Top="85" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA02Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <Image x:Name="itemA03_back" Height="48" Canvas.Left="174" Source="img/haribo.png" Stretch="Fill" Canvas.Top="74" Width="34" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA03" Height="48" Canvas.Left="174" Source="img/haribo.png" Stretch="Fill" Canvas.Top="74" Width="34" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA03Rotation" CenterX="17" CenterY="24" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA03" HorizontalAlignment="Left" Height="38" VerticalAlignment="Top" Width="37" Source="img/ring.png" Canvas.Left="172" Canvas.Top="85" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA03Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <Image x:Name="itemA04_back" Height="55" Canvas.Left="221" Source="img/alpen_gold.png" Stretch="Fill" Canvas.Top="67" Width="24" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA04" Height="55" Canvas.Left="221" Source="img/alpen_gold.png" Stretch="Fill" Canvas.Top="67" Width="24" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA04Rotation" CenterX="12" CenterY="27.5" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA04" HorizontalAlignment="Left" Height="38" VerticalAlignment="Top" Width="37" Source="img/ring.png" Canvas.Left="213" Canvas.Top="84" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA04Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <Image x:Name="itemA05_back" Height="55" Canvas.Left="262" Source="img/redbull.png" Stretch="Fill" Canvas.Top="67" Width="24" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA05" Height="55" Canvas.Left="262" Source="img/redbull.png" Stretch="Fill" Canvas.Top="67" Width="24" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA05Rotation" CenterX="12" CenterY="27.5" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA05" HorizontalAlignment="Left" Height="38" VerticalAlignment="Center" Width="37" Source="img/ring.png" Canvas.Left="255" Canvas.Top="84" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA05Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <!-- A06 -->
+        <Image x:Name="itemA06_back" Height="55" Canvas.Left="308" Source="img/bounty.png" Stretch="Fill" Canvas.Top="67" Width="12" VerticalAlignment="Center" Canvas.ZIndex="1" HorizontalAlignment="Center"/>
+        <Image x:Name="itemA06" Height="55" Canvas.Left="308" Source="img/bounty.png" Stretch="Fill" Canvas.Top="67" Width="12" HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA06Rotation" CenterX="6" CenterY="27.5" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA06" HorizontalAlignment="Left" Height="38" VerticalAlignment="Center" Width="37" Source="img/ring.png" Canvas.Left="297" Canvas.Top="84" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA06Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <!-- A07 -->
+        <Image x:Name="itemA07_back" Height="60" Canvas.Left="345" Source="img/7day.png" Stretch="Fill" Canvas.Top="62" Width="25" HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA07" Height="60" Canvas.Left="345" Source="img/7day.png" Stretch="Fill" Canvas.Top="62" Width="25" HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA07Rotation" CenterX="12.5" CenterY="30" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA07" HorizontalAlignment="Left" Height="38" VerticalAlignment="Center" Width="37" Source="img/ring.png" Canvas.Left="339" Canvas.Top="84" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA07Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <!-- A08 -->
+        <Image x:Name="itemA08_back" Height="65" Canvas.Left="387" Source="img/cola.png" Stretch="Fill" Canvas.Top="57" Width="20" HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA08" Height="65" Canvas.Left="387" Source="img/cola.png" Stretch="Fill" Canvas.Top="57" Width="20" HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA08Rotation" CenterX="10" CenterY="32.5"/>
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA08" HorizontalAlignment="Left" Height="38" VerticalAlignment="Center" Width="37" Source="img/ring.png" Canvas.Left="380" Canvas.Top="84" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA08Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+
+
+
+
+
+
+
+
+
+
+        <!-- A09 -->
+        <Image x:Name="itemA09_back" Height="57" Canvas.Left="92" Source="img/fruto_nana.png" Stretch="Fill" Canvas.Top="164" Width="30" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA09" Height="57" Canvas.Left="92" Source="img/fruto_nana.png" Stretch="Fill" Canvas.Top="164" Width="30" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA09Rotation" CenterX="15" CenterY="28.5"/>
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA09" HorizontalAlignment="Center" Height="38" VerticalAlignment="Top" Width="37" Source="img/ring.png" Canvas.Left="89" Canvas.Top="185" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA09Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <!-- A10 -->
+        <Image x:Name="itemA10_back" Height="78" Canvas.Left="131" Source="img/jardin.png" Stretch="Fill" Canvas.Top="143" Width="35" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA10" Height="78" Canvas.Left="131" Source="img/jardin.png" Stretch="Fill" Canvas.Top="143" Width="35" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA10Rotation" CenterX="17.5" CenterY="39" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA10" HorizontalAlignment="Center" Height="38" VerticalAlignment="Top" Width="37" Source="img/ring.png" Canvas.Left="131" Canvas.Top="185" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA10Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <!-- A11 -->
+        <Image x:Name="itemA11_back" Height="77" Canvas.Left="179" Source="img/barinoff.png" Stretch="Fill" Canvas.Top="146" Width="22" HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA11" Height="77" Canvas.Left="179" Source="img/barinoff.png" Stretch="Fill" Canvas.Top="146" Width="22" HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA11Rotation" CenterX="11" CenterY="38.5" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA11" HorizontalAlignment="Center" Height="38" VerticalAlignment="Top" Width="37" Source="img/ring.png" Canvas.Left="172" Canvas.Top="186" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA11Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <!-- A12 -->
+        <Image x:Name="itemA12_back" Height="78" Canvas.Left="220" Source="img/big_juice.png" Stretch="Fill" Canvas.Top="145" Width="24" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA12" Height="78" Canvas.Left="220" Source="img/big_juice.png" Stretch="Fill" Canvas.Top="145" Width="24" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA12Rotation" CenterX="12" CenterY="39" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA12" HorizontalAlignment="Center" Height="38" VerticalAlignment="Top" Width="37" Source="img/ring.png" Canvas.Left="214" Canvas.Top="186" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA12Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <!-- A13 -->
+        <Image x:Name="itemA13_back" Height="38" Canvas.Left="259" Source="img/agusha.png" Stretch="Fill" Canvas.Top="184" Width="28" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA13" Height="38" Canvas.Left="259" Source="img/agusha.png" Stretch="Fill" Canvas.Top="184" Width="28" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA13Rotation" CenterX="14" CenterY="19" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA13" HorizontalAlignment="Center" Height="38" VerticalAlignment="Top" Width="37" Source="img/ring.png" Canvas.Left="255" Canvas.Top="186" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA13Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <!-- A14 -->
+        <Image x:Name="itemA14_back" Height="54" Canvas.Left="297" Source="img/bombbar.png" Stretch="Fill" Canvas.Top="168" Width="37" HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA14" Height="54" Canvas.Left="297" Source="img/bombbar.png" Stretch="Fill" Canvas.Top="168" Width="37" HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA14Rotation" CenterX="18.5" CenterY="27" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA14" HorizontalAlignment="Center" Height="38" VerticalAlignment="Top" Width="37" Source="img/ring.png" Canvas.Left="297" Canvas.Top="185" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA14Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <!-- A15 -->
+        <Image x:Name="itemA15_back" Height="58" Canvas.Left="339" Source="img/mango.png" Stretch="Fill" Canvas.Top="166" Width="37" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA15" Height="58" Canvas.Left="339" Source="img/mango.png" Stretch="Fill" Canvas.Top="166" Width="37" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA15Rotation" CenterX="18.5" CenterY="29" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA15" HorizontalAlignment="Center" Height="38" VerticalAlignment="Top" Width="37" Source="img/ring.png" Canvas.Left="339" Canvas.Top="186" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA15Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <!-- A16 -->
+        <Image x:Name="itemA16_back" Height="57" Canvas.Left="382" Source="img/nuts.png" Stretch="Fill" Canvas.Top="166" Width="32" HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA16" Height="57" Canvas.Left="382" Source="img/nuts.png" Stretch="Fill" Canvas.Top="166" Width="32" HorizontalAlignment="Center" VerticalAlignment="Center" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA16Rotation" CenterX="16" CenterY="28.5" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA16" HorizontalAlignment="Left" Height="38" VerticalAlignment="Top" Width="37" Source="img/ring.png" Canvas.Left="380" Canvas.Top="186" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA16Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+
+
+
+
+
+
+
+
+
+
+
+        <Image x:Name="itemA17_back" HorizontalAlignment="Left" Height="73" VerticalAlignment="Center" Width="51" Source="img/lays_crab.png" Canvas.Left="107" Canvas.Top="248" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA17" HorizontalAlignment="Left" Height="73" VerticalAlignment="Center"
+               Width="51" Source="img/lays_crab.png" Canvas.Left="107" Canvas.Top="248" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA17Rotation" CenterX="25.5" CenterY="36.5" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA17" HorizontalAlignment="Left" Height="38" VerticalAlignment="Center" Width="37" Source="img/ring.png" Canvas.Left="91" Canvas.Top="285" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA17Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA17_1" HorizontalAlignment="Left" Height="38" VerticalAlignment="Center" Width="37" Source="img/ring.png" Canvas.Left="131" Canvas.Top="285" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA17_1Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <Image x:Name="itemA18_back" Height="61" Canvas.Left="188" Source="img/nutella.png" Stretch="Fill" Width="49" Canvas.Top="260" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA18" HorizontalAlignment="Left" Height="61" VerticalAlignment="Center" Width="49" Source="img/nutella.png" Canvas.Left="188" Canvas.Top="260" Canvas.ZIndex="2" Stretch="Fill">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA18Rotation" CenterX="24.5" CenterY="30.5" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA18" HorizontalAlignment="Left" Height="38" VerticalAlignment="Center" Width="37" Source="img/ring.png" Canvas.Left="174" Canvas.Top="285" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA18Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA18_1" HorizontalAlignment="Left" Height="38" VerticalAlignment="Center" Width="37" Source="img/ring.png" Canvas.Left="212" Canvas.Top="285" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA18_1Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <Image x:Name="itemA19_back" Height="46" Canvas.Left="259" Source="img/yubileinoe.png" Stretch="Fill" Width="72" Canvas.Top="277" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA19" HorizontalAlignment="Center" Height="46" VerticalAlignment="Top" Width="72" Source="img/yubileinoe.png" Canvas.Left="259" Canvas.Top="277" Canvas.ZIndex="2" Stretch="Fill" >
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA19Rotation" CenterX="36" CenterY="23" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA19" HorizontalAlignment="Center" Height="38" VerticalAlignment="Center" Width="37" Source="img/ring.png" Canvas.Left="256" Canvas.Top="285" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA19Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA19_1" HorizontalAlignment="Center" Height="38" VerticalAlignment="Center" Width="37" Source="img/ring.png" Canvas.Left="295" Canvas.Top="285" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA19_1Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <Image x:Name="itemA20_back" Height="59" Canvas.Left="344" Source="img/big_7days.png" Stretch="Fill" Width="63" Canvas.Top="262" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA20" HorizontalAlignment="Left" Height="59" VerticalAlignment="Top" Width="63" Source="img/big_7days.png" Canvas.Left="344" Canvas.Top="262" Canvas.ZIndex="2" Stretch="Fill" >
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA20Rotation" CenterX="31.5" CenterY="29.5" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA20" HorizontalAlignment="Left" Height="38" VerticalAlignment="Center" Width="37" Source="img/ring.png" Canvas.Left="339" Canvas.Top="285" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA20Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA20_1" HorizontalAlignment="Left" Height="38" VerticalAlignment="Center" Width="37" Source="img/ring.png" Canvas.Left="378" Canvas.Top="285" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA20_1Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+
+
+
+
+
+
+
+
+
+
+
+        <Image x:Name="itemA21_back" HorizontalAlignment="Left" Height="59" VerticalAlignment="Top" Width="75" Source="img/greenfield.png" Canvas.Left="91" Canvas.Top="361" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA21" HorizontalAlignment="Left" Height="59" VerticalAlignment="Top" Width="75" Source="img/greenfield.png" Canvas.Left="91" Canvas.Top="361" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA21Rotation" CenterX="37.5" CenterY="29.5" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA21" HorizontalAlignment="Left" Height="38" VerticalAlignment="Center" Width="37" Source="img/ring.png" Canvas.Left="91" Canvas.Top="385" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA21Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA21_1" HorizontalAlignment="Left" Height="38" VerticalAlignment="Center" Width="37" Source="img/ring.png" Canvas.Left="131" Canvas.Top="385" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA21_1Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <Image x:Name="itemA22_back" Height="40" Canvas.Left="184" Source="img/3_crusts.png" Width="53" Canvas.Top="381" HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="Fill" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA22" HorizontalAlignment="Left" Height="40" VerticalAlignment="Top" Width="53" Source="img/3_crusts.png" Canvas.Left="184" Canvas.Top="381" Canvas.ZIndex="2" Stretch="Fill">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA22Rotation" CenterX="26.5" CenterY="20"/>
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA22" HorizontalAlignment="Left" Height="38" VerticalAlignment="Center" Width="37" Source="img/ring.png" Canvas.Left="174" Canvas.Top="385" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA22Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA22_1" HorizontalAlignment="Left" Height="38" VerticalAlignment="Center" Width="37" Source="img/ring.png" Canvas.Left="212" Canvas.Top="385" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA22_1Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <Image x:Name="itemA23_back" Height="53" Canvas.Left="259" Source="img/chocopie.png" Stretch="Fill" Width="72" Canvas.Top="370" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA23" HorizontalAlignment="Center" Height="53" VerticalAlignment="Top" Width="72" Source="img/chocopie.png" Canvas.Left="259" Canvas.Top="370" Canvas.ZIndex="2" Stretch="Fill" >
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA23Rotation" CenterX="36" CenterY="26.5" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA23" HorizontalAlignment="Center" Height="38" VerticalAlignment="Center" Width="37" Source="img/ring.png" Canvas.Left="256" Canvas.Top="385" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA23Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA23_1" HorizontalAlignment="Center" Height="38" VerticalAlignment="Center" Width="37" Source="img/ring.png" Canvas.Left="295" Canvas.Top="385" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA23_1Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <Image x:Name="itemA24_back" HorizontalAlignment="Left" Height="42" VerticalAlignment="Center" Width="47" Source="img/skittles.png" Canvas.Left="353" Canvas.Top="381" Canvas.ZIndex="1" Stretch="Fill"/>
+        <Image x:Name="itemA24" HorizontalAlignment="Left" Height="42" VerticalAlignment="Center" Width="47" Source="img/skittles.png" Canvas.Left="353" Canvas.Top="381" Canvas.ZIndex="2" Stretch="Fill" >
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA24Rotation" CenterX="23.5" CenterY="21" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA24" HorizontalAlignment="Left" Height="38" VerticalAlignment="Center" Width="37" Source="img/ring.png" Canvas.Left="339" Canvas.Top="385" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA24Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA24_1" HorizontalAlignment="Left" Height="38" VerticalAlignment="Center" Width="37" Source="img/ring.png" Canvas.Left="378" Canvas.Top="385" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA24_1Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+
+
+
+
+
+
+
+
+        <!-- A25 -->
+        <Image x:Name="itemA25_back" Height="44" Canvas.Left="93" Source="img/kokos_milk.png" Stretch="Fill" Canvas.Top="480" Width="29" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA25" Height="44" Canvas.Left="93" Source="img/kokos_milk.png" Stretch="Fill" Canvas.Top="480" Width="29" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA25Rotation" CenterX="14.5" CenterY="22"/>
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA25" HorizontalAlignment="Center" Height="38" VerticalAlignment="Top" Width="37" Source="img/ring.png" Canvas.Left="89" Canvas.Top="485" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA25Rotation" CenterX="18.5" CenterY="19" />
+                <!--Центр вращения (половина ширины и высоты)-->
+            </Image.RenderTransform>
+        </Image>
+
+        <!-- A26 -->
+        <Image x:Name="itemA26_back" Height="44" Canvas.Left="137" Source="img/chudo.png" Stretch="Fill" Canvas.Top="480" Width="24" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA26" Height="44" Canvas.Left="137" Source="img/chudo.png" Stretch="Fill" Canvas.Top="480" Width="24" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA26Rotation" CenterX="12" CenterY="22" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA26" HorizontalAlignment="Center" Height="38" VerticalAlignment="Top" Width="37" Source="img/ring.png" Canvas.Left="131" Canvas.Top="485" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA26Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <!-- A27 -->
+        <Image x:Name="itemA27_back" Height="71" Canvas.Left="179" Source="img/piligrim.png" Stretch="Fill" Canvas.Top="453" Width="23" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA27" Height="71" Canvas.Left="179" Source="img/piligrim.png" Stretch="Fill" Canvas.Top="453" Width="23" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA27Rotation" CenterX="11.5" CenterY="35.5" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA27" HorizontalAlignment="Center" Height="38" VerticalAlignment="Top" Width="37" Source="img/ring.png" Canvas.Left="172" Canvas.Top="486" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA27Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <!-- A28 -->
+        <Image x:Name="itemA28_back" Height="71" Canvas.Left="220" Source="img/aqua_minerale.png" Stretch="Fill" Canvas.Top="453" Width="24" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA28" Height="71" Canvas.Left="220" Source="img/aqua_minerale.png" Stretch="Fill" Canvas.Top="453" Width="24" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA28Rotation" CenterX="12" CenterY="35.5" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA28" HorizontalAlignment="Center" Height="38" VerticalAlignment="Top" Width="37" Source="img/ring.png" Canvas.Left="214" Canvas.Top="486" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA28Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <!-- A29 -->
+        <Image x:Name="itemA29_back" Height="62" Canvas.Left="259" Source="img/sandwich.png" Stretch="Fill" Canvas.Top="460" Width="28" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA29" Height="62" Canvas.Left="259" Source="img/sandwich.png" Stretch="Fill" Canvas.Top="460" Width="28" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA29Rotation" CenterX="14" CenterY="31" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA29" HorizontalAlignment="Center" Height="38" VerticalAlignment="Top" Width="37" Source="img/ring.png" Canvas.Left="255" Canvas.Top="486" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA29Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <!-- A30 -->
+        <Image x:Name="itemA30_back" Height="44" Canvas.Left="303" Source="img/small_juice.png" Stretch="Fill" Canvas.Top="480" Width="24" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA30" Height="44" Canvas.Left="303" Source="img/small_juice.png" Stretch="Fill" Canvas.Top="480" Width="24" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA30Rotation" CenterX="12" CenterY="22" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA30" HorizontalAlignment="Center" Height="38" VerticalAlignment="Top" Width="37" Source="img/ring.png" Canvas.Left="297" Canvas.Top="486" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA30Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <!-- A31 -->
+        <Image x:Name="itemA31_back" Height="56" Canvas.Left="338" Source="img/hrustim.png" Stretch="Fill" Canvas.Top="467" Width="36" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA31" Height="56" Canvas.Left="338" Source="img/hrustim.png" Stretch="Fill" Canvas.Top="467" Width="36" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA31Rotation" CenterX="18" CenterY="28" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA31" HorizontalAlignment="Left" Height="38" VerticalAlignment="Top" Width="37" Source="img/ring.png" Canvas.Left="340" Canvas.Top="487" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA31Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
+        <!-- A32 -->
+        <Image x:Name="itemA32_back" Height="29" Canvas.Left="382" Source="img/aktibio.png" Stretch="Fill" Canvas.Top="496" Width="32" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.ZIndex="1"/>
+        <Image x:Name="itemA32" Height="29" Canvas.Left="382" Source="img/aktibio.png" Stretch="Fill" Canvas.Top="496" Width="32" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.ZIndex="2">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="itemA32Rotation" CenterX="16" CenterY="14.5" />
+                    <!-- Центр вращения (половина ширины и высоты) -->
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Image x:Name="ringA32" HorizontalAlignment="Left" Height="38" VerticalAlignment="Top" Width="37" Source="img/ring.png" Canvas.Left="380" Canvas.Top="486" Canvas.ZIndex="3">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="ringA32Rotation" CenterX="18.5" CenterY="19" />
+                <!-- Центр вращения (половина ширины и высоты) -->
+            </Image.RenderTransform>
+        </Image>
+
 
         <!--Экран автомата -->
         <Label x:Name="mainScreen" Content="0 ₽" HorizontalAlignment="Left" VerticalAlignment="Center" Height="73"
                 Width="81" Background="Black" HorizontalContentAlignment="Center"
-                VerticalContentAlignment="Center" ScrollViewer.VerticalScrollBarVisibility="Disabled" Foreground="#FF018317" FontFamily="DS-Digital"
+                VerticalContentAlignment="Center" ScrollViewer.VerticalScrollBarVisibility="Disabled" Foreground="#FF018317"
+               FontFamily="/fonts/#DS-Digital"
                 UseLayoutRounding="True" FontSize="16" Canvas.Left="443" Canvas.Top="58"/>
-        <!--0 ₽ NEED: 100 ₽&#x0a;HAVE: 50 ₽ DS-Digital-->
+        <!--0 ₽ NEED: 100 ₽&#x0a;HAVE: 50 ₽ DS-Digital fonts/DS-DIGIB.TTF-->
 
         <!--Клавиатура автомата-->
         <Grid Margin="443,152,10,10">
@@ -204,6 +852,20 @@
 
         <!--костыль для прятки купюр-->
         <Image x:Name="hideBanknoteImage" Height="90" Canvas.Left="447" Canvas.Top="276" Width="74" Source="img/hide_banknote.png" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Hidden"/>
+
+        <!-- костыль для прятания товаров Visible Hidden-->
+        <Image x:Name="hideItems" Height="721" Canvas.Left="74" Source="img/hide_items.png" Canvas.Top="43" Width="357" Canvas.ZIndex="5" Visibility="Visible"/>
+
+
+        <!--крышки автомата Hidden Visible-->
+        <Image x:Name="lid_closed" Height="73" Canvas.Left="142" Canvas.Top="623" Width="221" Source="img/lid_closed.png" Visibility="Visible" Canvas.ZIndex="5"/>
+        <Image x:Name="lid_half_closed" Height="73" Canvas.Left="100" Canvas.Top="623" Width="263" Source="img/lid_half_closed.png" Visibility="Hidden" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.ZIndex="5"/>
+        <Image x:Name="lid_almost_opened" Height="73" Canvas.Left="81" Canvas.Top="623" Width="282" Source="img/lid_almost_opened.png" Visibility="Hidden" HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.ZIndex="5"/>
+        <Image x:Name="lid_opened" Height="39" Canvas.Left="86" Canvas.Top="620" Width="277" Source="img/lid_opened.png" Visibility="Hidden" Canvas.ZIndex="5"/>
+
+        <!--<Image Height="74" Width="52" Source="/img/lays_crab.png" Canvas.Left="228" Canvas.Top="664" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.ZIndex="99"/>-->
+
+
     </Canvas>
 
 </Window>
